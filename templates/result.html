@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Result</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        .container { max-width: 700px; margin: auto; }
+        img { max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 20px; }
+        p { font-size: 1.2em; margin-top: 20px; }
+        a { display: inline-block; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Result</h1>
+        <p>{{ result_text }}</p>
+        
+        
+        <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Processed Image">
+        
+        <br>
+        <a href="/">Process Another Image</a>
+    </div>
+</body>
+</html>
