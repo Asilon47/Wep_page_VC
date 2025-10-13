@@ -8,15 +8,24 @@
         body { font-family: sans-serif; text-align: center; margin-top: 50px; }
         .container { max-width: 700px; margin: auto; }
         img { max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 20px; }
-        p { font-size: 1.2em; margin-top: 20px; }
+        /* Style for the result text */
+        .result-text { font-size: 1.5em; margin-top: 20px; padding: 10px; border-radius: 5px; font-weight: bold; }
+        /* Style for when fire is detected */
+        .fire { color: white; background-color: #d9534f; border: 1px solid #d43f3a;}
+        /* Style for when no fire is detected */
+        .no-fire { color: white; background-color: #5cb85c; border: 1px solid #4cae4c;}
         a { display: inline-block; margin-top: 30px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Result</h1>
-        <p>{{ result_text }}</p>
         
+        {% if fire_detected %}
+            <p class="result-text fire">{{ result_text }}</p>
+        {% else %}
+            <p class="result-text no-fire">{{ result_text }}</p>
+        {% endif %}
         
         <img src="{{ url_for('uploaded_file', filename=image_name) }}" alt="Processed Image">
         

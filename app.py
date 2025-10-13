@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'static/uploads/'
 
 # Define a set of allowed file extensions for security.
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Create an instance of the Flask class. '__name__' is a special variable that gets the name of the current Python module.
 app = Flask(__name__)
@@ -38,71 +38,71 @@ def allowed_file(filename):
 # Define the function that will eventually contain your image processing logic.
 def process_image(filepath):
     """
-    This is where your neural network and classical image processing will go.
-    For now, it just returns the original image's path and a simple message.
+    This is where your neural network will go.
+    It should return the image path, a text message, and a boolean for the result.
     """
-    # TODO: Replace this placeholder logic with your actual image processing code.
-    # For example, you would load the image, run it through your model, save the new image, and generate text.
-
-    # As a placeholder, we'll say the processed image is the same as the original one.
-    processed_image_path = filepath
-
-    # As a placeholder, create a simple text result.
-    text_result = "Image processed successfully! (This is a placeholder)"
-
-    # Return the path to the resulting image and the text description.
-    return processed_image_path, text_result
+    # --- TODO: Replace this simulation with your actual NN model ---
+    # For example:
+    # prediction = my_fire_detection_model.predict(filepath)
+    # fire_detected = prediction > 0.5 # Assuming the model outputs a probability
+    
+    # --- Simulation Logic ---
+    # We'll simulate the result based on the uploaded filename for testing.
+    filename = os.path.basename(filepath).lower()
+    if 'fire' in filename:
+        fire_detected = True
+        text_result = "Warning: Fire Detected!"
+    else:
+        fire_detected = False
+        text_result = "All Clear: No Fire Detected."
+    # --- End of Simulation Logic ---
+        
+    processed_image_path = filepath # For now, we show the original image
+    
+    # Return THREE values now: the path, the text, and the boolean result
+    return processed_image_path, text_result, fire_detected
 
 # --- Routes ---
 
-# Define the main route for the web page, which supports both GET (viewing the page) and POST (submitting the form) methods.
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
-    # Check if the request method is POST, which means the user has submitted the form.
     if request.method == 'POST':
-        # Check if the 'file' key exists in the files part of the request.
+        # ... (keep the file checking and saving logic exactly the same) ...
         if 'file' not in request.files:
-            # If no file part, redirect the user back to the upload page.
             return redirect(request.url)
-
-        # Get the file object from the request.
         file = request.files['file']
-
-        # If the user does not select a file, the browser submits an empty file part with no filename.
         if file.filename == '':
-            # If the filename is empty, redirect the user back to the upload page.
             return redirect(request.url)
-
-        # If a file exists and its extension is allowed...
         if file and allowed_file(file.filename):
-            # Make the filename safe by removing any dangerous characters (like '..', '/', etc.).
             filename = secure_filename(file.filename)
-
-            # Create the full path to save the file by joining the upload folder path and the secure filename.
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-            # Save the uploaded file to the filesystem at the specified path.
             file.save(filepath)
-
-            # Call our placeholder function to "process" the image.
-            processed_image_path, result_text = process_image(filepath)
-
-            # Get just the filename (without the folder path) from the processed image path.
+            
+            # Process the image and get all THREE return values
+            processed_image_path, result_text, fire_detected = process_image(filepath)
+            
             processed_filename = os.path.basename(processed_image_path)
-
-            # Render the 'result.html' template, passing the processed filename and result text to it.
-            return render_template('result.html', image_name=processed_filename, result_text=result_text)
-
-    # If the request method is GET (the user is just visiting the page), render the main index.html template.
+            
+            # Pass the new 'fire_detected' boolean to the template
+            return render_template(
+                'result.html', 
+                image_name=processed_filename, 
+                result_text=result_text,
+                fire_detected=fire_detected  # <-- NEW
+            )
+            
     return render_template('index.html')
 
-# Define a route to serve the images from the upload folder.
-# This allows the HTML <img src="..."> tag to access the files.
+# ... (keep the rest of the file the same) ...
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    # Send the requested file from the UPLOAD_FOLDER directory.
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+if __name__ == '__main__':
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    app.run(debug=True)
 # This block checks if the script is being run directly (not imported as a module).
 if __name__ == '__main__':
     # Check if the upload directory exists.
