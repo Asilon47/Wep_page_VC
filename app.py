@@ -126,7 +126,9 @@ def upload_file():
             if not os.path.exists(app.config["UPLOAD_FOLDER"]):
                 os.makedirs(app.config["UPLOAD_FOLDER"])
             file.save(filepath)
-            processed_image_path, result_text, fire_detected = process_image(filepath, fire_model)
+            processed_image_path, result_text, fire_detected = process_image(
+                filepath, fire_model
+            )
             processed_filename = os.path.basename(processed_image_path)
             return render_template(
                 "result.html",
@@ -140,6 +142,7 @@ def upload_file():
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
 
 fire_model = load_trained_model()
 
